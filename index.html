@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couples Uno 🃏</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ==================== THEMES ==================== */
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --card-width: 60px;
+            --card-height: 85px;
+            --radius: 12px;
+            --primary: #e94560;
+            --primary-light: #ff6b6b;
+            --text: #ffffff;
+            --text-muted: #a0a0a0;
+            --card-red: #e63946;
+            --card-blue: #457b9d;
+            --card-green: #2a9d8f;
+            --card-yellow: #f4a261;
+            --card-wild: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06d6a0);
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Theme: Classic */
+        [data-theme="classic"] {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --primary: #e94560;
+            --card-red: #e63946;
+            --card-blue: #457b9d;
+            --card-green: #2a9d8f;
+            --card-yellow: #f4a261;
+        }
+
+        /* Theme: Milk & Mocha */
+        [data-theme="milk-mocha"] {
+            --bg-primary: #f5e6d3;
+            --bg-secondary: #e8d5c4;
+            --primary: #8b6914;
+            --primary-light: #a67c00;
+            --text: #4a3728;
+            --text-muted: #7d6b5d;
+            --card-red: #c44569;
+            --card-blue: #546de5;
+            --card-green: #3dc1d3;
+            --card-yellow: #f5b041;
+            --card-wild: linear-gradient(135deg, #a67c52, #8b6914, #c44569, #546de5);
+            --shadow: 0 10px 30px rgba(74, 55, 40, 0.15);
+        }
+
+        /* Theme: Spider-Verse */
+        [data-theme="spiderverse"] {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #0d0d1a;
+            --primary: #00d4ff;
+            --primary-light: #ff00ff;
+            --text: #ffffff;
+            --text-muted: #b0b0b0;
+            --card-red: #ff1744;
+            --card-blue: #00e5ff;
+            --card-green: #76ff03;
+            --card-yellow: #ffea00;
+            --card-wild: linear-gradient(135deg, #ff00ff, #00d4ff, #ff1744, #76ff03);
+            --shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Theme: Zootopia */
+        [data-theme="zootopia"] {
+            --bg-primary: #2c3e50;
+            --bg-secondary: #1a252f;
+            --primary: #f39c12;
+            --primary-light: #e74c3c;
+            --text: #ecf0f1;
+            --text-muted: #95a5a6;
+            --card-red: #e74c3c;
+            --card-blue: #3498db;
+            --card-green: #27ae60;
+            --card-yellow: #f39c12;
+            --card-wild: linear-gradient(135deg, #e74c3c, #f39c12, #27ae60, #3498db);
+            --shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.5s;
+        }
+
+        /* ==================== SCREENS ==================== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ==================== HOME SCREEN ==================== */
+        #home-screen {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--card-wild);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .btn {
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* ==================== RULES SCREEN ==================== */
+        #rules-screen {
+            background: var(--bg-secondary);
+            justify-content: flex-start;
+            padding-top: 4rem;
+        }
+
+        .rules-container {
+            max-width: 800px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .rules-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+
+        .rule-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-section h3 {
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .rule-section ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .rule-section li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .rule-section li::before {
+            content: '🎯';
+            position: absolute;
+            left: 0;
+        }
+
+        .card-examples {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .card-example {
+            width: 40px;
+            height: 56px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* ==================== SETUP SCREEN ==================== */
+        #setup-screen {
+            background: var(--bg-primary);
+        }
+
+        .setup-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .player-setup {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .player-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-option {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            background: rgba(255,255,255,0.1);
+            margin: 0 auto;
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.1);
+        }
+
+        .avatar-option.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .theme-option {
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .theme-option:hover {
+            transform: scale(1.02);
+        }
+
+        .theme-option.selected {
+            border-color: var(--primary);
+        }
+
+        .theme-option[data-theme="classic"] { background: #1a1a2e; }
+        .theme-option[data-theme="milk-mocha"] { background: #f5e6d3; color: #4a3728; }
+        .theme-option[data-theme="spiderverse"] { background: linear-gradient(135deg, #1a1a2e, #0d0d1a); }
+        .theme-option[data-theme="zootopia"] { background: #2c3e50; }
+
+        .name-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius);
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .name-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .setup-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* ==================== PAIRING SCREEN ==================== */
+        #pairing-screen {
+            background: var(--bg-primary);
+        }
+
+        .pairing-box {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .pairing-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .code-display {
+            font-family: 'Fredoka', monospace;
+            font-size: 3rem;
+            letter-spacing: 10px;
+            color: var(--primary);
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+        }
+
+        .copy-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            color: var(--text-muted);
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .join-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: var(--radius);
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 5px;
+            font-family: 'Fredoka', sans-serif;
+            margin-bottom: 1rem;
+        }
+
+        .join-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .status-text {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .status-text.connected {
+            color: #27ae60;
+        }
+
+        /* ==================== GAME SCREEN ==================== */
+        #game-screen {
+            background: var(--bg-primary);
+            padding: 1rem;
+            min-height: 100vh;
+            display: none;
+        }
+
+        #game-screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .round-info {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+        }
+
+        .score-display {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .player-score {
+            text-align: center;
+        }
+
+        .player-score .name {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .player-score .points {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .game-area {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 200px 1fr 200px;
+            gap: 1rem;
+            min-height: 0;
+        }
+
+        /* Opponent Hand */
+        .opponent-area {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .opponent-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .opponent-name {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .opponent-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .opponent-card-back {
+            width: 30px;
+            height: 42px;
+            background: linear-gradient(135deg, #333 25%, #444 50%, #333 75%);
+            border-radius: 4px;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Center Play Area */
+        .play-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .deck-pile {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .deck-card {
+            width: var(--card-width);
+            height: var(--card-height);
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, #333 25%, #444 50%, #333 75%);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .deck-card::before {
+            content: 'UNO';
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.8rem;
+            color: white;
+            transform: rotate(-45deg);
+        }
+
+        .deck-card:hover {
+            transform: scale(1.05);
+        }
+
+        .draw-pile-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--primary);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .discard-pile {
+            position: relative;
+        }
+
+        .discard-card {
+            width: var(--card-width);
+            height: var(--card-height);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .direction-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            animation: rotateDir 1s linear infinite;
+        }
+
+        @keyframes rotateDir {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        .play-area-info {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .play-area-info.highlight {
+            color: var(--primary);
+            font-weight: bold;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Current Player Hand */
+        .player-area {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .player-name {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+        }
+
+        .player-turn {
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+
+        .player-hand {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            justify-content: center;
+            align-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .uno-card {
+            width: var(--card-width);
+            height: var(--card-height);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.3rem;
+            font-family: 'Fredoka', sans-serif;
+            transition: all 0.2s;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .uno-card:hover {
+            transform: translateY(-15px) scale(1.1);
+            z-index: 10;
+        }
+
+        .uno-card.unplayable {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .uno-card.unplayable:hover {
+            transform: none;
+        }
+
+        .uno-card .card-top {
+            font-size: 0.8rem;
+            font-weight: bold;
+            align-self: flex-start;
+        }
+
+        .uno-card .card-center {
+            font-size: 1.5rem;
+        }
+
+        .uno-card .card-bottom {
+            font-size: 0.8rem;
+            font-weight: bold;
+            align-self: flex-end;
+            transform: rotate(180deg);
+        }
+
+        .uno-card.red { background: var(--card-red); }
+        .uno-card.blue { background: var(--card-blue); }
+        .uno-card.green { background: var(--card-green); }
+        .uno-card.yellow { background: var(--card-yellow); }
+        .uno-card.wild { 
+            background: var(--card-wild); 
+            color: white;
+        }
+
+        .uno-card.skip { }
+        .uno-card.reverse { }
+        .uno-card.draw2 { 
+            position: relative;
+        }
+        .uno-card.draw2::after {
+            content: '+2';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 0.6rem;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* ==================== COLOR PICKER ==================== */
+        .color-picker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .color-picker.active {
+            display: flex;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .color-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .color-btn.red { background: var(--card-red); }
+        .color-btn.blue { background: var(--card-blue); }
+        .color-btn.green { background: var(--card-green); }
+        .color-btn.yellow { background: var(--card-yellow); }
+
+        /* ==================== VICTORY SCREEN ==================== */
+        #victory-screen {
+            background: var(--bg-primary);
+            text-align: center;
+        }
+
+        .victory-content {
+            animation: victoryBounce 1s ease-out;
+        }
+
+        @keyframes victoryBounce {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .victory-trophy {
+            font-size: 8rem;
+            animation: trophyShine 2s infinite;
+        }
+
+        @keyframes trophyShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+        }
+
+        .victory-text {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3rem;
+            margin: 1rem 0;
+            background: var(--card-wild);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .victory-dance {
+            font-size: 4rem;
+            margin: 2rem 0;
+            animation: dance 0.5s infinite alternate;
+        }
+
+        @keyframes dance {
+            from { transform: rotate(-10deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        .victory-stats {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* ==================== MOBILE ==================== */
+        @media (max-width: 768px) {
+            .setup-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-area {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            
+            :root {
+                --card-width: 45px;
+                --card-height: 65px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .game-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: 0;
+            animation: fall linear forwards;
+            z-index: 9999;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+<body data-theme="classic">
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="screen active">
+        <div class="logo">🃏 UNO</div>
+        <div class="subtitle">Couples Edition</div>
+        <div class="menu-buttons">
+            <button class="btn btn-primary" onclick="showScreen('rules-screen')">
+                📖 How to Play
+            </button>
+            <button class="btn btn-primary" onclick="showScreen('setup-screen')">
+                🎮 Create Game
+            </button>
+            <button class="btn btn-secondary" onclick="showScreen('pairing-screen')">
+                🔗 Join Game
+            </button>
+        </div>
+    </div>
+
+    <!-- RULES SCREEN -->
+    <div id="rules-screen" class="screen">
+        <h1 class="rules-title">🎯 UNO Rules</h1>
+        <div class="rules-container">
+            <div class="rule-section">
+                <h3>Objective</h3>
+                <p>Be the first to play all your cards! First to reach 500 points wins.</p>
+            </div>
+            <div class="rule-section">
+                <h3>Setup</h3>
+                <ul>
+                    <li>Each player gets 7 cards</li>
+                    <li>Place one card face up to start the discard pile</li>
+                    <li>Draw pile goes face down</li>
+                </ul>
+            </div>
+            <div class="rule-section">
+                <h3>How to Play</h3>
+                <ul>
+                    <li>Match by color OR number/symbol</li>
+                    <li>Play a Wild anytime (choose any color)</li>
+                    <li>If you can't play, draw a card</li>
+                    <li>Call "UNO!" when you have one card left!</li>
+                </ul>
+            </div>
+            <div class="rule-section">
+                <h3>Special Cards</h3>
+                <div class="card-examples">
+                    <div class="card-example" style="background: var(--card-red);">⏭️ Skip</div>
+                    <div class="card-example" style="background: var(--card-blue);">🔄 Reverse</div>
+                    <div class="card-example" style="background: var(--card-green);">+2 +2</div>
+                    <div class="card-example" style="background: var(--card-wild);">🌈 Wild</div>
+                    <div class="card-example" style="background: var(--card-wild);">+4 +4</div>
+                </div>
+                <ul>
+                    <li><strong>Skip</strong> - Next player loses turn</li>
+                    <li><strong>Reverse</strong> - Changes direction (in 2-player, acts like Skip)</li>
+                    <li><strong>Draw 2</strong> - Next player draws 2 and loses turn</li>
+                    <li><strong>Wild</strong> - Choose any color</li>
+                    <li><strong>Wild Draw 4</strong> - Choose color + next player draws 4</li>
+                </ul>
+            </div>
+            <div class="rule-section">
+                <h3>Scoring</h3>
+                <ul>
+                    <li>Number cards: Face value</li>
+                    <li>Skip, Reverse, Draw 2: 20 points</li>
+                    <li>Wild, Wild Draw 4: 50 points</li>
+                    <li>First to 500 points wins!</li>
+                </ul>
+            </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 2rem;" onclick="showScreen('home-screen')">← Back</button>
+    </div>
+
+    <!-- SETUP SCREEN -->
+    <div id="setup-screen" class="screen">
+        <h1 style="font-family: 'Fredoka', sans-serif; font-size: 2.5rem; margin-bottom: 2rem;">👫 Player Setup</h1>
+        <div class="setup-container">
+            <div class="player-setup">
+                <div class="player-title">You</div>
+                <input type="text" class="name-input" id="player1-name" placeholder="Your Name" maxlength="15">
+                <div class="avatar-grid">
+                    <div class="avatar-option selected" data-avatar="🐻">🐻</div>
+                    <div class="avatar-option" data-avatar="🐰">🐰</div>
+                    <div class="avatar-option" data-avatar="🦊">🦊</div>
+                    <div class="avatar-option" data-avatar="🐼">🐼</div>
+                </div>
+                <div class="theme-grid">
+                    <div class="theme-option selected" data-theme="classic">Classic</div>
+                    <div class="theme-option" data-theme="milk-mocha">Milk & Mocha</div>
+                    <div class="theme-option" data-theme="spiderverse">Spider-Verse</div>
+                    <div class="theme-option" data-theme="zootopia">Zootopia</div>
+                </div>
+            </div>
+            <div class="player-setup">
+                <div class="player-title">Partner</div>
+                <input type="text" class="name-input" id="player2-name" placeholder="Partner's Name" maxlength="15">
+                <div class="avatar-grid">
+                    <div class="avatar-option selected" data-avatar="🐻">🐻</div>
+                    <div class="avatar-option" data-avatar="🐰">🐰</div>
+                    <div class="avatar-option" data-avatar="🦊">🦊</div>
+                    <div class="avatar-option" data-avatar="🐼">🐼</div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Same theme will apply to both</p>
+            </div>
+            <div class="setup-actions">
+                <button class="btn btn-secondary" onclick="showScreen('home-screen')">← Back</button>
+                <button class="btn btn-primary" onclick="createGame()">Create Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAIRING SCREEN -->
+    <div id="pairing-screen" class="screen">
+        <div class="pairing-box">
+            <div class="pairing-title">🔗 Connect with Partner</div>
+            
+            <div id="host-section">
+                <p>Share this code with your partner:</p>
+                <div class="code-display" id="host-code">------</div>
+                <button class="copy-btn" onclick="copyCode()">📋 Copy Code</button>
+                <p class="status-text" id="host-status">Waiting for partner...</p>
+            </div>
+            
+            <div class="divider"><span>OR</span></div>
+            
+            <div id="join-section">
+                <p>Enter partner's code:</p>
+                <input type="text" class="join-input" id="join-code" placeholder="XXXXXX" maxlength="6">
+                <button class="btn btn-primary" style="width: 100%;" onclick="joinGame()">Join Game</button>
+                <p class="status-text" id="join-status"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen">
+        <div class="game-header">
+            <div class="round-info">Round <span id="round-num">1</span></div>
+            <div class="score-display">
+                <div class="player-score">
+                    <div class="name" id="p1-name-display">You</div>
+                    <div class="points" id="p1-points">0</div>
+                </div>
+                <div class="player-score">
+                    <div class="name" id="p2-name-display">Partner</div>
+                    <div class="points" id="p2-points">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <!-- Opponent -->
+            <div class="opponent-area">
+                <div class="opponent-avatar" id="opponent-avatar">🐻</div>
+                <div class="opponent-name" id="opponent-name">Partner</div>
+                <div class="opponent-cards" id="opponent-cards"></div>
+                <div class="card-count" id="opponent-card-count">7 cards</div>
+            </div>
+            
+            <!-- Play Area -->
+            <div class="play-area">
+                <div class="deck-pile" onclick="drawCard()">
+                    <div class="deck-card"></div>
+                    <div class="draw-pile-count" id="draw-count">108</div>
+                </div>
+                <div class="discard-pile">
+                    <div class="direction-indicator" id="direction-icon">🔄</div>
+                    <div class="discard-card" id="discard-card"></div>
+                </div>
+                <div class="play-area-info" id="play-info">Your turn! Play a card</div>
+            </div>
+            
+            <!-- Player -->
+            <div class="player-area">
+                <div class="player-info">
+                    <div class="player-avatar" id="player-avatar">🐻</div>
+                    <div>
+                        <div class="player-name" id="player-name">You</div>
+                        <div class="player-turn" id="player-turn">Your turn</div>
+                    </div>
+                </div>
+                <div class="player-hand" id="player-hand"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VICTORY SCREEN -->
+    <div id="victory-screen" class="screen">
+        <div class="victory-content">
+            <div class="victory-trophy">🏆</div>
+            <div class="victory-text" id="victory-text">You Win!</div>
+            <div class="victory-dance" id="victory-dance">💃🕺</div>
+            <div class="victory-stats" id="victory-stats"></div>
+            <button class="btn btn-primary" onclick="playAgain()">Play Again</button>
+            <button class="btn btn-secondary" style="margin-left: 1rem;" onclick="showScreen('home-screen')">Main Menu</button>
+        </div>
+    </div>
+
+    <!-- COLOR PICKER -->
+    <div class="color-picker" id="color-picker">
+        <div style="text-align: center;">
+            <h2 style="margin-bottom: 1.5rem;">Choose a Color</h2>
+            <div class="color-options">
+                <button class="color-btn red" onclick="chooseColor('red')"></button>
+                <button class="color-btn blue" onclick="chooseColor('blue')"></button>
+                <button class="color-btn green" onclick="chooseColor('green')"></button>
+                <button class="color-btn yellow" onclick="chooseColor('yellow')"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== GAME STATE ====================
+        let gameState = {
+            peer: null,
+            conn: null,
+            isHost: false,
+            playerName: '',
+            playerAvatar: '',
+            partnerName: '',
+            partnerAvatar: '',
+            theme: 'classic',
+            player1Score: 0,
+            player2Score: 0,
+            round: 1,
+            myTurn: true,
+            direction: 1, // 1 = clockwise, -1 = counter
+            currentColor: '',
+            currentValue: '',
+            myCards: [],
+            opponentCardCount: 7,
+            deck: [],
+            discardPile: [],
+            unoCalled: false,
+            pendingDraw: 0
+        };
+
+        // ==================== UNO DECK ====================
+        const COLORS = ['red', 'blue', 'green', 'yellow'];
+        const SPECIALS = ['skip', 'reverse', 'draw2'];
+        const WILDS = ['wild', 'wild4'];
+
+        function createDeck() {
+            const deck = [];
+            // Number cards 0-9 (one 0, two 1-9)
+            COLORS.forEach(color => {
+                deck.push({ color, value: '0', type: 'number' });
+                for (let i = 1; i <= 9; i++) {
+                    deck.push({ color, value: String(i), type: 'number' });
+                    deck.push({ color, value: String(i), type: 'number' });
+                }
+            });
+            // Special cards
+            COLORS.forEach(color => {
+                SPECIALS.forEach(special => {
+                    deck.push({ color, value: special, type: 'special' });
+                    deck.push({ color, value: special, type: 'special' });
+                });
+            });
+            // Wild cards
+            WILDS.forEach(wild => {
+                for (let i = 0; i < 4; i++) {
+                    deck.push({ color: 'wild', value: wild, type: 'wild' });
+                }
+            });
+            return shuffle(deck);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // ==================== NAVIGATION ====================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // ==================== SETUP ====================
+        document.querySelectorAll('.avatar-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                opt.parentElement.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                gameState.playerAvatar = opt.dataset.avatar;
+            });
+        });
+
+        document.querySelectorAll('.theme-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                gameState.theme = opt.dataset.theme;
+                document.body.dataset.theme = gameState.theme;
+            });
+        });
+
+        function createGame() {
+            gameState.playerName = document.getElementById('player1-name').value || 'Player 1';
+            gameState.partnerName = document.getElementById('player2-name').value || 'Player 2';
+            
+            // Generate code
+            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            gameState.isHost = true;
+            
+            // Initialize Peer
+            gameState.peer = new Peer('uno-' + code);
+            
+            gameState.peer.on('open', (id) => {
+                document.getElementById('host-code').textContent = code;
+            });
+            
+            gameState.peer.on('connection', (conn) => {
+                gameState.conn = conn;
+                setupConnection();
+            });
+            
+            showScreen('pairing-screen');
+        }
+
+        function joinGame() {
+            const code = document.getElementById('join-code').value.toUpperCase();
+            if (code.length !== 6) {
+                document.getElementById('join-status').textContent = 'Enter a 6-character code';
+                return;
+            }
+            
+            gameState.playerName = document.getElementById('player1-name').value || 'Player 2';
+            gameState.isHost = false;
+            
+            gameState.peer = new Peer();
+            
+            gameState.peer.on('open', () => {
+                gameState.conn = gameState.peer.connect('uno-' + code);
+                setupConnection();
+            });
+            
+            document.getElementById('join-status').textContent = 'Connecting...';
+        }
+
+        function copyCode() {
+            const code = document.getElementById('host-code').textContent;
+            navigator.clipboard.writeText(code);
+            document.getElementById('host-status').textContent = 'Code copied!';
+        }
+
+        function setupConnection() {
+            gameState.conn.on('open', () => {
+                document.getElementById('host-status').textContent = 'Connected!';
+                document.getElementById('host-status').classList.add('connected');
+                document.getElementById('join-status').textContent = 'Connected!';
+                document.getElementById('join-status').classList.add('connected');
+                
+                // Start game
+                setTimeout(() => {
+                    initGame();
+                }, 1000);
+            });
+            
+            gameState.conn.on('data', (data) => {
+                handleMessage(data);
+            });
+        }
+
+        function sendMessage(type, data) {
+            if (gameState.conn && gameState.conn.open) {
+                gameState.conn.send({ type, data });
+            }
+        }
+
+        // ==================== GAME LOGIC ====================
+        function initGame() {
+            gameState.deck = createDeck();
+            gameState.myCards = gameState.deck.splice(0, 7);
+            gameState.opponentCardCount = 7;
+            
+            // Start with a non-wild card
+            let firstCard;
+            do {
+                firstCard = gameState.deck.pop();
+            } while (firstCard.color === 'wild');
+            
+            gameState.discardPile = [firstCard];
+            gameState.currentColor = firstCard.color;
+            gameState.currentValue = firstCard.value;
+            gameState.direction = 1;
+            gameState.myTurn = gameState.isHost;
+            gameState.pendingDraw = 0;
+            
+            // Send game state to opponent
+            sendMessage('init', {
+                myName: gameState.playerName,
+                myAvatar: gameState.playerAvatar,
+                myCards: gameState.myCards,
+                theme: gameState.theme,
+                firstCard: firstCard,
+                hostGoesFirst: gameState.isHost
+            });
+            
+            // If I'm not host, receive from host
+            if (!gameState.isHost) {
+                // Wait for host's message
+            } else {
+                // Host sends their setup
+                sendMessage('opponentSetup', {
+                    name: gameState.partnerName,
+                    avatar: '🐻'
+                });
+            }
+            
+            updateUI();
+            showScreen('game-screen');
+        }
+
+        function handleMessage(msg) {
+            switch(msg.type) {
+                case 'init':
+                    gameState.partnerName = msg.data.myName;
+                    gameState.partnerAvatar = msg.data.myAvatar;
+                    gameState.theme = msg.data.theme;
+                    document.body.dataset.theme = gameState.theme;
+                    gameState.myCards = msg.data.myCards;
+                    gameState.discardPile = [msg.data.firstCard];
+                    gameState.currentColor = msg.data.firstCard.color;
+                    gameState.currentValue = msg.data.firstCard.value;
+                    gameState.myTurn = !msg.data.hostGoesFirst;
+                    
+                    // Update opponent info
+                    sendMessage('opponentSetup', {
+                        name: gameState.playerName,
+                        avatar: gameState.playerAvatar
+                    });
+                    break;
+                    
+                case 'opponentSetup':
+                    gameState.partnerName = msg.data.name;
+                    gameState.partnerAvatar = msg.data.avatar;
+                    break;
+                    
+                case 'playCard':
+                    gameState.discardPile.push(msg.data.card);
+                    gameState.currentColor = msg.data.color;
+                    gameState.currentValue = msg.data.value;
+                    gameState.direction = msg.data.direction;
+                    gameState.opponentCardCount = msg.data.cardCount;
+                    gameState.myTurn = true;
+                    gameState.pendingDraw = msg.data.pendingDraw || 0;
+                    
+                    if (msg.data.unoCalled) {
+                        showMessage('Partner: UNO!');
+                    }
+                    break;
+                    
+                case 'drawCard':
+                    const drawn = msg.data.cards;
+                    gameState.myCards.push(...drawn);
+                    gameState.opponentCardCount = msg.data.opponentCount;
+                    gameState.myTurn = true;
+                    gameState.pendingDraw = 0;
+                    break;
+                    
+                case 'passTurn':
+                    gameState.myTurn = true;
+                    gameState.pendingDraw = msg.data.pendingDraw || 0;
+                    break;
+                    
+                case 'roundEnd':
+                    gameState.player1Score = msg.data.p1Score;
+                    gameState.player2Score = msg.data.p2Score;
+                    gameState.round = msg.data.round;
+                    showVictory(msg.data.winner === 'me', msg.data.points);
+                    break;
+                    
+                case 'newRound':
+                    gameState.myCards = msg.data.myCards;
+                    gameState.discardPile = [msg.data.firstCard];
+                    gameState.currentColor = msg.data.firstCard.color;
+                    gameState.currentValue = msg.data.firstCard.value;
+                    gameState.direction = 1;
+                    gameState.myTurn = msg.data.myTurn;
+                    gameState.pendingDraw = 0;
+                    break;
+            }
+            updateUI();
+        }
+
+        function canPlay(card) {
+            if (gameState.pendingDraw > 0) return false;
+            if (card.color === 'wild') return true;
+            if (card.color === gameState.currentColor) return true;
+            if (card.value === gameState.currentValue) return true;
+            return false;
+        }
+
+        function playCard(cardIndex) {
+            const card = gameState.myCards[cardIndex];
+            
+            if (!canPlay(card)) {
+                showMessage("Can't play that card!");
+                return;
+            }
+            
+            // Handle Wild
+            if (card.color === 'wild') {
+                showColorPicker(cardIndex);
+                return;
+            }
+            
+            executePlay(cardIndex, card.color);
+        }
+
+        function executePlay(cardIndex, chosenColor) {
+            const card = gameState.myCards.splice(cardIndex, 1)[0];
+            
+            // Handle special cards
+            let newDirection = gameState.direction;
+            let pendingDraw = 0;
+            
+            if (card.value === 'reverse') {
+                newDirection *= -1;
+            } else if (card.value === 'skip') {
+                pendingDraw = 0; // In 2-player, skip = lose turn
+            } else if (card.value === 'draw2') {
+                pendingDraw = 2;
+            } else if (card.value === 'wild4') {
+                pendingDraw = 4;
+            }
+            
+            const playData = {
+                card: card,
+                color: chosenColor || card.color,
+                value: card.value,
+                direction: newDirection,
+                cardCount: gameState.myCards.length,
+                pendingDraw: pendingDraw,
+                unoCalled: gameState.myCards.length === 1
+            };
+            
+            gameState.discardPile.push(card);
+            gameState.currentColor = playData.color;
+            gameState.currentValue = playData.value;
+            gameState.direction = playData.direction;
+            
+            sendMessage('playCard', playData);
+            
+            // Check win
+            if (gameState.myCards.length === 0) {
+                endRound('me');
+                return;
+            }
+            
+            if (pendingDraw > 0) {
+                // Opponent draws
+                const drawCards = gameState.deck.splice(0, pendingDraw);
+                sendMessage('drawCard', {
+                    cards: drawCards,
+                    opponentCount: gameState.myCards.length
+                });
+            }
+            
+            gameState.myTurn = false;
+            updateUI();
+        }
+
+        function chooseColor(color) {
+            document.getElementById('color-picker').classList.remove('active');
+            const cardIndex = window.pendingCardIndex;
+            executePlay(cardIndex, color);
+            window.pendingCardIndex = null;
+        }
+
+        function showColorPicker(cardIndex) {
+            window.pendingCardIndex = cardIndex;
+            document.getElementById('color-picker').classList.add('active');
+        }
+
+        function drawCard() {
+            if (!gameState.myTurn) return;
+            if (gameState.pendingDraw > 0) {
+                // Must draw pending
+                const cards = gameState.deck.splice(0, gameState.pendingDraw);
+                gameState.myCards.push(...cards);
+                sendMessage('passTurn', { pendingDraw: 0 });
+                gameState.myTurn = false;
+                gameState.pendingDraw = 0;
+                updateUI();
+                return;
+            }
+            
+            // Normal draw
+            if (gameState.deck.length < 2) {
+                // Reshuffle
+                const topCard = gameState.discardPile.pop();
+                gameState.deck = shuffle(gameState.discardPile);
+                gameState.discardPile = [topCard];
+            }
+            
+            const card = gameState.deck.pop();
+            gameState.myCards.push(card);
+            
+            // Can't play drawn card, pass turn
+            if (!canPlay(card)) {
+                sendMessage('passTurn', { pendingDraw: 0 });
+                gameState.myTurn = false;
+            } else {
+                showMessage("You can play the drawn card!");
+            }
+            
+            updateUI();
+        }
+
+        function endRound(winner) {
+            // Calculate points
+            let p1Points = 0, p2Points = 0;
+            
+            if (winner === 'me') {
+                gameState.myCards.forEach(card => {
+                    p2Points += card.value === 'wild' || card.value === 'wild4' ? 50 :
+                                 ['skip', 'reverse', 'draw2'].includes(card.value) ? 20 :
+                                 parseInt(card.value) || 0;
+                });
+                gameState.player1Score += p2Points;
+            } else {
+                gameState.myCards.forEach(card => {
+                    p1Points += card.value === 'wild' || card.value === 'wild4' ? 50 :
+                                 ['skip', 'reverse', 'draw2'].includes(card.value) ? 20 :
+                                 parseInt(card.value) || 0;
+                });
+                gameState.player2Score += p1Points;
+            }
+            
+            const roundWinner = winner === 'me' ? gameState.playerName : gameState.partnerName;
+            
+            sendMessage('roundEnd', {
+                winner: winner,
+                p1Score: gameState.player1Score,
+                p2Score: gameState.player2Score,
+                round: gameState.round,
+                points: winner === 'me' ? p2Points : p1Points
+            });
+            
+            showVictory(winner === 'me', winner === 'me' ? p2Points : p1Points);
+        }
+
+        function showVictory(iWon, points) {
+            document.getElementById('victory-text').textContent = iWon ? 'You Win!' : 'Partner Wins!';
+            document.getElementById('victory-stats').textContent = `+${points} points | Round ${gameState.round}`;
+            
+            if (iWon) {
+                createConfetti();
+            }
+            
+            showScreen('victory-screen');
+        }
+
+        function playAgain() {
+            gameState.round++;
+            gameState.deck = createDeck();
+            gameState.myCards = gameState.deck.splice(0, 7);
+            gameState.opponentCardCount = 7;
+            
+            let firstCard;
+            do {
+                firstCard = gameState.deck.pop();
+            } while (firstCard.color === 'wild');
+            
+            gameState.discardPile = [firstCard];
+            gameState.currentColor = firstCard.color;
+            gameState.currentValue = firstCard.value;
+            gameState.direction = 1;
+            gameState.myTurn = gameState.isHost;
+            gameState.pendingDraw = 0;
+            
+            sendMessage('newRound', {
+                myCards: gameState.myCards,
+                firstCard: firstCard,
+                myTurn: gameState.isHost
+            });
+            
+            updateUI();
+            showScreen('game-screen');
+        }
+
+        function createConfetti() {
+            const colors = ['#e94560', '#457b9d', '#2a9d8f', '#f4a261', '#ff006e', '#8338ec'];
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 30);
+            }
+        }
+
+        // ==================== UI UPDATE ====================
+        function updateUI() {
+            // Header
+            document.getElementById('round-num').textContent = gameState.round;
+            document.getElementById('p1-name-display').textContent = gameState.playerName;
+            document.getElementById('p2-name-display').textContent = gameState.partnerName;
+            document.getElementById('p1-points').textContent = gameState.player1Score;
+            document.getElementById('p2-points').textContent = gameState.player2Score;
+            
+            // Opponent
+            document.getElementById('opponent-avatar').textContent = gameState.partnerAvatar;
+            document.getElementById('opponent-name').textContent = gameState.partnerName;
+            document.getElementById('opponent-card-count').textContent = gameState.opponentCardCount + ' cards';
+            
+            // Opponent cards (backs)
+            const oppCards = document.getElementById('opponent-cards');
+            oppCards.innerHTML = '';
+            for (let i = 0; i < Math.min(gameState.opponentCardCount, 10); i++) {
+                const cardBack = document.createElement('div');
+                cardBack.className = 'opponent-card-back';
+                oppCards.appendChild(cardBack);
+            }
+            
+            // Discard pile
+            const topCard = gameState.discardPile[gameState.discardPile.length - 1];
+            const discardEl = document.getElementById('discard-card');
+            discardEl.className = 'discard-card ' + topCard.color;
+            discardEl.textContent = getCardDisplay(topCard);
+            
+            // Direction
+            document.getElementById('direction-icon').style.display = 
+                gameState.direction === -1 ? 'block' : 'none';
+            
+            // Draw pile
+            document.getElementById('draw-count').textContent = gameState.deck.length;
+            
+            // Play info
+            const playInfo = document.getElementById('play-info');
+            if (gameState.pendingDraw > 0) {
+                playInfo.textContent = `Draw ${gameState.pendingDraw} cards!`;
+                playInfo.classList.add('highlight');
+            } else if (gameState.myTurn) {
+                playInfo.textContent = 'Your turn! Play a card';
+                playInfo.classList.remove('highlight');
+            } else {
+                playInfo.textContent = `${gameState.partnerName}'s turn...`;
+                playInfo.classList.add('highlight');
+            }
+            
+            // Player hand
+            const hand = document.getElementById('player-hand');
+            hand.innerHTML = '';
+            gameState.myCards.forEach((card, i) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'uno-card ' + card.color;
+                if (!canPlay(card) && gameState.myTurn) {
+                    cardEl.classList.add('unplayable');
+                }
+                cardEl.innerHTML = `
+                    <span class="card-top">${getCardDisplay(card)}</span>
+                    <span class="card-center">${getCardIcon(card)}</span>
+                    <span class="card-bottom">${getCardDisplay(card)}</span>
+                `;
+                cardEl.onclick = () => playCard(i);
+                hand.appendChild(cardEl);
+            });
+            
+            // Player info
+            document.getElementById('player-name').textContent = gameState.playerName;
+            document.getElementById('player-avatar').textContent = gameState.playerAvatar;
+            document.getElementById('player-turn').textContent = gameState.myTurn ? 'Your turn' : 'Waiting...';
+        }
+
+        function getCardDisplay(card) {
+            if (card.value === 'skip') return '⊘';
+            if (card.value === 'reverse') return '⇄';
+            if (card.value === 'draw2') return '+2';
+            if (card.value === 'wild') return '🌈';
+            if (card.value === 'wild4') return '+4';
+            return card.value;
+        }
+
+        function getCardIcon(card) {
+            if (card.color === 'wild') return '🌈';
+            if (card.value === 'skip') return '⏭';
+            if (card.value === 'reverse') return '🔄';
+            if (card.value === 'draw2') return '➕';
+            return '';
+        }
+
+        function showMessage(msg) {
+            const info = document.getElementById('play-info');
+            const old = info.textContent;
+            info.textContent = msg;
+            info.classList.add('highlight');
+            setTimeout(() => {
+                if (gameState.myTurn) {
+                    info.textContent = 'Your turn! Play a card';
+                    info.classList.remove('highlight');
+                }
+            }, 2000);
+        }
+
+        // Initialize
+        gameState.playerAvatar = '🐻';
+        gameState.theme = 'classic';
+    </script>
+</body>
+</html>
